@@ -7,11 +7,11 @@ export const typeDefs = gql`
   }
 
   type Query {
-    viewer: User
+    viewer: [Post]
   }
 
-  type Mutations {
-    createPost: Post!
+  type Mutation {
+    createPost(title: String!): Post!
   }
 
   type Subscription {

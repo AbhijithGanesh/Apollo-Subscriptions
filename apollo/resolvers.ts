@@ -6,20 +6,23 @@ const pubSub = new PubSub();
 
 export const resolvers = {
   Query: {
-    viewer() {
-      return { id: 1, name: "John Smith", status: "cached" };
+    async viewer() {
+      let body: Promise<Post[]> = prisma.post.findMany();
+      await body;
+      return body;
     },
   },
   Mutation: {
-    createPost(parent, args, ctxt, info) {
-      const { title, id } = args;
+    async createPost(parent, args, ctxt, info) {
+      const { title } = args;
       let body: Promise<Post> = prisma.post.create({
         data: {
           title: title,
-          id: id,
         },
       });
+      await body;
       pubSub.publish("newPost", { body });
+      return body;
     },
   },
   Subscription: {
