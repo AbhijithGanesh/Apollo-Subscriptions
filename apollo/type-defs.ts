@@ -1,13 +1,20 @@
-import { gql } from '@apollo/client'
+import { gql } from "@apollo/client";
 
 export const typeDefs = gql`
-  type User {
-    id: ID!
-    name: String!
-    status: String!
+  type Post {
+    id: Int!
+    title: String!
   }
 
   type Query {
     viewer: User
   }
-`
+
+  type Mutations {
+    createPost: Post!
+  }
+
+  type Subscription {
+    recieveUpdates: Post!
+  }
+`;
