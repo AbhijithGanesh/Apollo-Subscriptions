@@ -1,16 +1,16 @@
-import { Context } from "./context";
+import { CourseRegistrations } from "@prisma/client";
 import { withFilter } from "graphql-subscriptions";
 import {
-  type UserInputType,
   type CourseInputType,
+  type UserInputType,
 } from "../interfaces/sharedTypes";
-import { CourseRegistrations, User } from "@prisma/client";
+import { Context } from "./context";
 
 const subscribeToFreeSeats = {
   subscribe: withFilter(
     (_parent, args: { courseId: string }, context) =>
       context.pubsub.asyncIterator(`${args?.courseId}_free_seats`),
-    (payload, _variables, context) => {
+    (_payload, _variables, _context) => {
       return true;
     }
   ),
@@ -22,36 +22,55 @@ const subscribeToFreeSeats = {
 export const resolvers = {
   Query: {
     viewer: () => "Hello World!",
-    getAllUsers: (parent: any, args: any, context: Context, _info: any) => {
+    getAllUsers: (
+      parent: unknown,
+      args: unknown,
+      context: Context,
+      _info: unknown
+    ) => {
       return context.prisma.user.findMany({ orderBy: { reg_no: "asc" } });
     },
-    getUserByID: (parent: any, args: any, context: Context, _info: any) =>
-      context.prisma.user.findUnique({ where: { reg_no: args?.id } }),
+    getUserByID: (
+      parent: unknown,
+      args: { id: string },
+      context: Context,
+      _info: unknown
+    ) => context.prisma.user.findUnique({ where: { reg_no: args?.id } }),
 
-    getCourses: (parent: any, args: any, context: Context, _info: any) =>
+    getCourses: (
+      parent: unknown,
+      args: unknown,
+      context: Context,
+      _info: unknown
+    ) =>
       context.prisma.courseDetails.findMany({
         orderBy: { course_code: "asc" },
       }),
 
-    getCourseByID: (parent: any, args: any, context: Context, _info: any) => {
+    getCourseByID: (
+      parent: unknown,
+      args: { id: string },
+      context: Context,
+      _info: unknown
+    ) => {
       return context.prisma.courseDetails.findUnique({
         where: { course_code: args?.id },
       });
     },
     getCourseRegistrations: (
-      _parent: any,
-      _args: any,
+      _parent: unknown,
+      _args: unknown,
       context: Context,
-      _info: any
+      _info: unknown
     ) => {
       let courseReg = context.prisma.courseRegistrations.findMany({});
       return courseReg;
     },
     getCourseRegistrationByCourseId: (
-      _parent: any,
+      _parent: unknown,
       args: { courseId: string },
       context: Context,
-      _info: any
+      _info: unknown
     ) => {
       let courseReg = context.prisma.courseRegistrations.findMany({
         where: {
@@ -61,10 +80,10 @@ export const resolvers = {
       return courseReg;
     },
     getFreeSeats: async (
-      _parent: any,
+      _parent: unknown,
       args: { courseId: string },
       context: Context,
-      _info: any
+      _info: unknown
     ) => {
       let courseReg: CourseRegistrations[] =
         await context.prisma.courseRegistrations.findMany({
@@ -81,10 +100,10 @@ export const resolvers = {
   },
   Mutation: {
     createUser: (
-      parent: any,
+      parent: unknown,
       args: { data: UserInputType },
       context: Context,
-      _info: any
+      _info: unknown
     ) => {
       let post = context.prisma.user.create({
         data: {
@@ -92,14 +111,13 @@ export const resolvers = {
           name: args?.data.name,
         },
       });
-
       return post;
     },
     createCourse: (
-      parent: any,
+      parent: unknown,
       args: { data: CourseInputType },
       context: Context,
-      _info: any
+      _info: unknown
     ) => {
       return context.prisma.courseDetails.create({
         data: {
@@ -109,10 +127,10 @@ export const resolvers = {
       });
     },
     createRegistration: async (
-      parent: any,
-      args: { data: any },
+      parent: unknown,
+      args: { data: { reg_no: string; course_code: string } },
       context: Context,
-      _info: any
+      _info: unknown
     ) => {
       let registration = context.prisma.courseRegistrations.create({
         data: {
